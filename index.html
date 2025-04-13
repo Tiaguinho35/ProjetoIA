@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cartoon Image Gallery</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      margin: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .thumbnails img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s;
+    }
+
+    .thumbnails img:hover {
+      transform: scale(1.05);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 10px;
+    }
+
+    .slider {
+      position: relative;
+      width: 100%;
+      max-width: 600px;
+      height: 100%;
+      max-height: 90vh;
+      overflow: hidden;
+      border-radius: 16px;
+      background-color: #fff;
+    }
+
+    .slides {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .slides img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background-color: #000;
+      flex-shrink: 0;
+    }
+
+    .buttons {
+      position: absolute;
+      top: 50%;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      transform: translateY(-50%);
+      padding: 0 10px;
+    }
+
+    .buttons button, .close-btn {
+      background-color: rgba(0, 0, 0, 0.5);
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+    }
+
+    .indicators {
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .dot {
+      height: 12px;
+      width: 12px;
+      margin: 0 4px;
+      background-color: #bbb;
+      border-radius: 50%;
+      display: inline-block;
+      transition: background-color 0.3s ease;
+    }
+
+    .dot.active {
+      background-color: #333;
+    }
+
+    @media (max-width: 768px) {
+      .slider {
+        max-width: 90vw;
+        max-height: 80vh;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .thumbnails img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Cartoon Image Gallery</h1>
+  <div class="thumbnails">
+    <img src="./Imagens/cartoon_image_1.png" alt="Thumbnail 1" onclick="openModal(1)">
+    <img src="./Imagens/cartoon_image_2.png" alt="Thumbnail 2" onclick="openModal(2)">
+    <img src="./Imagens/cartoon_image_3.png" alt="Thumbnail 2" onclick="openModal(3)">
+    <img src="./Imagens/cartoon_image_4.png" alt="Thumbnail 2" onclick="openModal(4)">
+  </div>
+
+  <!-- Modal 1 -->
+  <div id="modal1" class="modal">
+    <div class="slider">
+      <button class="close-btn" onclick="closeModal(1)">X</button>
+      <div class="slides" id="slides1">
+        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
+        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
+        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
+        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
+      </div>
+      <div class="buttons">
+        <button onclick="prevSlide(1)">&#10094;</button>
+        <button onclick="nextSlide(1)">&#10095;</button>
+      </div>
+      <div class="indicators" id="indicators1"></div>
+    </div>
+  </div>
+
+  <!-- Modal 2 -->
+  <div id="modal2" class="modal">
+    <div class="slider">
+      <button class="close-btn" onclick="closeModal(2)">X</button>
+      <div class="slides" id="slides2">
+        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
+        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
+        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
+        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
+      </div>
+      <div class="buttons">
+        <button onclick="prevSlide(2)">&#10094;</button>
+        <button onclick="nextSlide(2)">&#10095;</button>
+      </div>
+      <div class="indicators" id="indicators2"></div>
+    </div>
+  </div>
+
+  <!-- Modal 3 -->
+  <div id="modal3" class="modal">
+    <div class="slider">
+      <button class="close-btn" onclick="closeModal(3)">X</button>
+      <div class="slides" id="slides3">
+        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
+        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
+        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
+        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
+      </div>
+      <div class="buttons">
+        <button onclick="prevSlide(3)">&#10094;</button>
+        <button onclick="nextSlide(3)">&#10095;</button>
+      </div>
+      <div class="indicators" id="indicators3"></div>
+    </div>
+  </div>
+
+  <!-- Modal 4 -->
+  <div id="modal4" class="modal">
+    <div class="slider">
+      <button class="close-btn" onclick="closeModal(4)">X</button>
+      <div class="slides" id="slides4">
+        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
+        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
+        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
+        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
+      </div>
+      <div class="buttons">
+        <button onclick="prevSlide(4)">&#10094;</button>
+        <button onclick="nextSlide(4)">&#10095;</button>
+      </div>
+      <div class="indicators" id="indicators4"></div>
+    </div>
+  </div>
+
+  <script>
+    const slideIndexes = [0, 0, 0, 0];
+
+    function updateIndicators(sliderId) {
+      const indicators = document.getElementById(`indicators${sliderId}`);
+      const total = document.getElementById(`slides${sliderId}`).children.length;
+      indicators.innerHTML = '';
+      for (let i = 0; i < total; i++) {
+        const dot = document.createElement('span');
+        dot.classList.add('dot');
+        if (i === slideIndexes[sliderId - 1]) dot.classList.add('active');
+        indicators.appendChild(dot);
+      }
+    }
+
+    function updateSlide(sliderId) {
+      const track = document.getElementById(`slides${sliderId}`);
+      const width = track.parentElement.clientWidth;
+      track.style.transform = `translateX(-${slideIndexes[sliderId - 1] * width}px)`;
+      updateIndicators(sliderId);
+    }
+
+    function nextSlide(sliderId) {
+      const track = document.getElementById(`slides${sliderId}`);
+      const total = track.children.length;
+      slideIndexes[sliderId - 1] = (slideIndexes[sliderId - 1] + 1) % total;
+      updateSlide(sliderId);
+    }
+
+    function prevSlide(sliderId) {
+      const track = document.getElementById(`slides${sliderId}`);
+      const total = track.children.length;
+      slideIndexes[sliderId - 1] = (slideIndexes[sliderId - 1] - 1 + total) % total;
+      updateSlide(sliderId);
+    }
+
+    function openModal(sliderId) {
+      document.getElementById(`modal${sliderId}`).style.display = 'flex';
+      updateSlide(sliderId);
+    }
+
+    function closeModal(sliderId) {
+      document.getElementById(`modal${sliderId}`).style.display = 'none';
+    }
+
+    window.addEventListener('resize', () => {
+      updateSlide(1);
+      updateSlide(2);
+      updateSlide(3);
+      updateSlide(4);
+    });
+  </script>
+</body>
+</html>
