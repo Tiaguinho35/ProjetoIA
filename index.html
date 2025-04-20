@@ -1,281 +1,213 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cartoon Image Gallery</title>
+  <title>Galeria com Hover e Slide</title>
   <style>
     * {
       box-sizing: border-box;
     }
 
     body {
-      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      padding: 2rem;
+      background: #f5f5f5;
     }
 
-    .thumbnails {
+    .gallery {
       display: flex;
-      gap: 20px;
       flex-wrap: wrap;
       justify-content: center;
-      margin-bottom: 40px;
+      gap: 1.5rem;
     }
 
-    .thumbnails img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
+    .hover-slideshow {
+      width: 100%;
+      max-width: 300px;
       border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       cursor: pointer;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      transition: transform 0.2s;
+      transition: transform 0.3s ease;
     }
 
-    .thumbnails img:hover {
+    .hover-slideshow:hover {
       transform: scale(1.05);
     }
 
     .modal {
       display: none;
       position: fixed;
-      top: 0;
+      z-index: 1000;
       left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
       justify-content: center;
       align-items: center;
-      z-index: 1000;
-      padding: 10px;
+      touch-action: pan-y;
     }
 
-    .slider {
-      position: relative;
-      width: 100%;
-      max-width: 600px;
-      height: 100%;
-      max-height: 90vh;
-      overflow: hidden;
-      border-radius: 16px;
-      background-color: #fff;
+    .modal-content {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 10px;
+      transition: all 0.3s ease;
     }
 
-    .slides {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      transition: transform 0.5s ease-in-out;
+    .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
-    .slides img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      background-color: #000;
-      flex-shrink: 0;
-    }
-
-    .buttons {
+    .controls {
       position: absolute;
       top: 50%;
       width: 100%;
       display: flex;
       justify-content: space-between;
+      padding: 0 2rem;
       transform: translateY(-50%);
-      padding: 0 10px;
     }
 
-    .buttons button, .close-btn {
-      background-color: rgba(0, 0, 0, 0.5);
-      border: none;
+    .control-btn {
+      font-size: 2rem;
       color: white;
-      font-size: 20px;
       cursor: pointer;
-      padding: 10px;
-      border-radius: 8px;
+      user-select: none;
     }
 
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 10;
-    }
-
-    .indicators {
-      position: absolute;
-      bottom: 10px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .dot {
-      height: 12px;
-      width: 12px;
-      margin: 0 4px;
-      background-color: #bbb;
-      border-radius: 50%;
-      display: inline-block;
-      transition: background-color 0.3s ease;
-    }
-
-    .dot.active {
-      background-color: #333;
-    }
-
-    @media (max-width: 768px) {
-      .slider {
-        max-width: 90vw;
-        max-height: 80vh;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .thumbnails img {
-        width: 100px;
-        height: 100px;
+    @media screen and (max-width: 600px) {
+      .hover-slideshow {
+        max-width: 90%;
       }
     }
   </style>
 </head>
 <body>
-  <h1>Cartoon Image Gallery</h1>
-  <div class="thumbnails">
-    <img src="./Imagens/cartoon_image_1.png" alt="Thumbnail 1" onclick="openModal(1)">
-    <img src="./Imagens/cartoon_image_2.png" alt="Thumbnail 2" onclick="openModal(2)">
-    <img src="./Imagens/cartoon_image_3.png" alt="Thumbnail 2" onclick="openModal(3)">
-    <img src="./Imagens/cartoon_image_4.png" alt="Thumbnail 2" onclick="openModal(4)">
+  <h1 style="text-align: center;">Galeria com Hover e Slide</h1>
+  <div class="gallery">
+    <img 
+      src="./Imagens/cartoon_image_1.png" 
+      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
+      class="hover-slideshow" 
+      alt="Imagem 1"
+    />
+    <img 
+      src="./Imagens/cartoon_image_1.png" 
+      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
+      class="hover-slideshow" 
+      alt="Imagem 2"
+    />
+    <img 
+      src="./Imagens/cartoon_image_1.png" 
+      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
+      class="hover-slideshow" 
+      alt="Imagem 3"
+    />
+    <img 
+      src="./Imagens/cartoon_image_1.png" 
+      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
+      class="hover-slideshow" 
+      alt="Imagem 4"
+    />
   </div>
 
-  <!-- Modal 1 -->
-  <div id="modal1" class="modal">
-    <div class="slider">
-      <button class="close-btn" onclick="closeModal(1)">X</button>
-      <div class="slides" id="slides1">
-        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
-        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
-        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
-        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
-      </div>
-      <div class="buttons">
-        <button onclick="prevSlide(1)">&#10094;</button>
-        <button onclick="nextSlide(1)">&#10095;</button>
-      </div>
-      <div class="indicators" id="indicators1"></div>
+  <div class="modal" id="modal">
+    <span class="close" id="closeBtn">&times;</span>
+    <div class="controls">
+      <span class="control-btn" id="prev">&#10094;</span>
+      <span class="control-btn" id="next">&#10095;</span>
     </div>
-  </div>
-
-  <!-- Modal 2 -->
-  <div id="modal2" class="modal">
-    <div class="slider">
-      <button class="close-btn" onclick="closeModal(2)">X</button>
-      <div class="slides" id="slides2">
-        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
-        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
-        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
-        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
-      </div>
-      <div class="buttons">
-        <button onclick="prevSlide(2)">&#10094;</button>
-        <button onclick="nextSlide(2)">&#10095;</button>
-      </div>
-      <div class="indicators" id="indicators2"></div>
-    </div>
-  </div>
-
-  <!-- Modal 3 -->
-  <div id="modal3" class="modal">
-    <div class="slider">
-      <button class="close-btn" onclick="closeModal(3)">X</button>
-      <div class="slides" id="slides3">
-        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
-        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
-        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
-        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
-      </div>
-      <div class="buttons">
-        <button onclick="prevSlide(3)">&#10094;</button>
-        <button onclick="nextSlide(3)">&#10095;</button>
-      </div>
-      <div class="indicators" id="indicators3"></div>
-    </div>
-  </div>
-
-  <!-- Modal 4 -->
-  <div id="modal4" class="modal">
-    <div class="slider">
-      <button class="close-btn" onclick="closeModal(4)">X</button>
-      <div class="slides" id="slides4">
-        <img src="./Imagens/cartoon_image_1.png" alt="Slide 1">
-        <img src="./Imagens/cartoon_image_2.png" alt="Slide 2">
-        <img src="./Imagens/cartoon_image_3.png" alt="Slide 3">
-        <img src="./Imagens/cartoon_image_4.png" alt="Slide 4">
-      </div>
-      <div class="buttons">
-        <button onclick="prevSlide(4)">&#10094;</button>
-        <button onclick="nextSlide(4)">&#10095;</button>
-      </div>
-      <div class="indicators" id="indicators4"></div>
-    </div>
+    <img class="modal-content" id="modalImg" />
   </div>
 
   <script>
-    const slideIndexes = [0, 0, 0, 0];
+    const hoverImages = document.querySelectorAll('.hover-slideshow');
+    const modal = document.getElementById("modal");
+    const modalImg = document.getElementById("modalImg");
+    const closeBtn = document.getElementById("closeBtn");
+    const nextBtn = document.getElementById("next");
+    const prevBtn = document.getElementById("prev");
 
-    function updateIndicators(sliderId) {
-      const indicators = document.getElementById(`indicators${sliderId}`);
-      const total = document.getElementById(`slides${sliderId}`).children.length;
-      indicators.innerHTML = '';
-      for (let i = 0; i < total; i++) {
-        const dot = document.createElement('span');
-        dot.classList.add('dot');
-        if (i === slideIndexes[sliderId - 1]) dot.classList.add('active');
-        indicators.appendChild(dot);
+    let modalIndex = 0;
+    let currentSlides = [];
+
+    hoverImages.forEach(img => {
+      let interval;
+      let index = 0;
+      const slides = JSON.parse(img.dataset.slideshow);
+      const originalSrc = slides[0];
+
+      // Hover slideshow effect
+      img.addEventListener('mouseenter', () => {
+        index = 1;
+        interval = setInterval(() => {
+          img.src = slides[index];
+          index = (index + 1) % slides.length;
+        }, 1000);
+      });
+
+      img.addEventListener('mouseleave', () => {
+        clearInterval(interval);
+        img.src = originalSrc;
+      });
+
+      // Modal click to show enlarged slide
+      img.addEventListener('click', () => {
+        currentSlides = slides;
+        modalIndex = 0;
+        modalImg.src = currentSlides[modalIndex];
+        modal.style.display = "flex";
+      });
+    });
+
+    closeBtn.onclick = () => {
+      modal.style.display = "none";
+    }
+
+    nextBtn.onclick = () => {
+      if (currentSlides.length > 0) {
+        modalIndex = (modalIndex + 1) % currentSlides.length;
+        modalImg.src = currentSlides[modalIndex];
       }
     }
 
-    function updateSlide(sliderId) {
-      const track = document.getElementById(`slides${sliderId}`);
-      const width = track.parentElement.clientWidth;
-      track.style.transform = `translateX(-${slideIndexes[sliderId - 1] * width}px)`;
-      updateIndicators(sliderId);
+    prevBtn.onclick = () => {
+      if (currentSlides.length > 0) {
+        modalIndex = (modalIndex - 1 + currentSlides.length) % currentSlides.length;
+        modalImg.src = currentSlides[modalIndex];
+      }
     }
 
-    function nextSlide(sliderId) {
-      const track = document.getElementById(`slides${sliderId}`);
-      const total = track.children.length;
-      slideIndexes[sliderId - 1] = (slideIndexes[sliderId - 1] + 1) % total;
-      updateSlide(sliderId);
-    }
+    // Swipe support para mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
 
-    function prevSlide(sliderId) {
-      const track = document.getElementById(`slides${sliderId}`);
-      const total = track.children.length;
-      slideIndexes[sliderId - 1] = (slideIndexes[sliderId - 1] - 1 + total) % total;
-      updateSlide(sliderId);
-    }
-
-    function openModal(sliderId) {
-      document.getElementById(`modal${sliderId}`).style.display = 'flex';
-      updateSlide(sliderId);
-    }
-
-    function closeModal(sliderId) {
-      document.getElementById(`modal${sliderId}`).style.display = 'none';
-    }
-
-    window.addEventListener('resize', () => {
-      updateSlide(1);
-      updateSlide(2);
-      updateSlide(3);
-      updateSlide(4);
+    modal.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
     });
+
+    modal.addEventListener('touchend', (e) => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleGesture();
+    });
+
+    function handleGesture() {
+      if (touchEndX < touchStartX - 50) {
+        nextBtn.click();
+      }
+      if (touchEndX > touchStartX + 50) {
+        prevBtn.click();
+      }
+    }
   </script>
 </body>
 </html>
