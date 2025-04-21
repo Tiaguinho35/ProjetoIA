@@ -42,9 +42,9 @@
       z-index: 1000;
       left: 0;
       top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.9);
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.95);
       justify-content: center;
       align-items: center;
       touch-action: pan-y;
@@ -55,6 +55,7 @@
       max-height: 90%;
       border-radius: 10px;
       transition: all 0.3s ease;
+      object-fit: contain;
     }
 
     .close {
@@ -65,6 +66,7 @@
       font-size: 40px;
       font-weight: bold;
       cursor: pointer;
+      z-index: 1100;
     }
 
     .controls {
@@ -84,9 +86,39 @@
       user-select: none;
     }
 
+    .indicators {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 1100;
+    }
+
+    .indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.4);
+      transition: background-color 0.3s;
+    }
+
+    .indicator.active {
+      background-color: white;
+    }
+
     @media screen and (max-width: 600px) {
       .hover-slideshow {
         max-width: 90%;
+      }
+      .controls {
+        display: none;
+      }
+      .modal-content {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
       }
     }
   </style>
@@ -94,30 +126,10 @@
 <body>
   <h1 style="text-align: center;">Galeria com Hover e Slide</h1>
   <div class="gallery">
-    <img 
-      src="./Imagens/cartoon_image_1.png" 
-      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
-      class="hover-slideshow" 
-      alt="Imagem 1"
-    />
-    <img 
-      src="./Imagens/cartoon_image_1.png" 
-      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
-      class="hover-slideshow" 
-      alt="Imagem 2"
-    />
-    <img 
-      src="./Imagens/cartoon_image_1.png" 
-      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
-      class="hover-slideshow" 
-      alt="Imagem 3"
-    />
-    <img 
-      src="./Imagens/cartoon_image_1.png" 
-      data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' 
-      class="hover-slideshow" 
-      alt="Imagem 4"
-    />
+    <img src="./Imagens/cartoon_image_1.png" data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' class="hover-slideshow" alt="Imagem 1" />
+    <img src="./Imagens/cartoon_image_1.png" data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' class="hover-slideshow" alt="Imagem 2" />
+    <img src="./Imagens/cartoon_image_1.png" data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' class="hover-slideshow" alt="Imagem 3" />
+    <img src="./Imagens/cartoon_image_1.png" data-slideshow='["./Imagens/cartoon_image_1.png", "./Imagens/cartoon_image_2.png", "./Imagens/cartoon_image_3.png", "./Imagens/cartoon_image_4.png"]' class="hover-slideshow" alt="Imagem 3" />
   </div>
 
   <div class="modal" id="modal">
@@ -127,6 +139,7 @@
       <span class="control-btn" id="next">&#10095;</span>
     </div>
     <img class="modal-content" id="modalImg" />
+    <div class="indicators" id="indicators"></div>
   </div>
 
   <script>
@@ -136,9 +149,28 @@
     const closeBtn = document.getElementById("closeBtn");
     const nextBtn = document.getElementById("next");
     const prevBtn = document.getElementById("prev");
+    const indicatorsContainer = document.getElementById("indicators");
 
     let modalIndex = 0;
     let currentSlides = [];
+    let autoSlideInterval;
+    let observer;
+
+    function updateIndicators() {
+      indicatorsContainer.innerHTML = "";
+      currentSlides.forEach((_, i) => {
+        const dot = document.createElement("div");
+        dot.className = "indicator";
+        if (i === modalIndex) dot.classList.add("active");
+        indicatorsContainer.appendChild(dot);
+      });
+    }
+
+    function showSlide(index) {
+      modalIndex = index;
+      modalImg.src = currentSlides[modalIndex];
+      updateIndicators();
+    }
 
     hoverImages.forEach(img => {
       let interval;
@@ -146,7 +178,6 @@
       const slides = JSON.parse(img.dataset.slideshow);
       const originalSrc = slides[0];
 
-      // Hover slideshow effect
       img.addEventListener('mouseenter', () => {
         index = 1;
         interval = setInterval(() => {
@@ -160,34 +191,46 @@
         img.src = originalSrc;
       });
 
-      // Modal click to show enlarged slide
       img.addEventListener('click', () => {
         currentSlides = slides;
-        modalIndex = 0;
-        modalImg.src = currentSlides[modalIndex];
+        showSlide(0);
         modal.style.display = "flex";
+        clearInterval(autoSlideInterval);
       });
+
+      // Observer para autoplay se estiver visível por completo
+      observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && window.innerWidth <= 600) {
+            let idx = 1;
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(() => {
+              img.src = slides[idx];
+              idx = (idx + 1) % slides.length;
+            }, 1500);
+          } else {
+            clearInterval(autoSlideInterval);
+            img.src = originalSrc;
+          }
+        });
+      }, { threshold: 1.0 });
+
+      observer.observe(img);
     });
 
     closeBtn.onclick = () => {
       modal.style.display = "none";
+      clearInterval(autoSlideInterval);
     }
 
     nextBtn.onclick = () => {
-      if (currentSlides.length > 0) {
-        modalIndex = (modalIndex + 1) % currentSlides.length;
-        modalImg.src = currentSlides[modalIndex];
-      }
+      showSlide((modalIndex + 1) % currentSlides.length);
     }
 
     prevBtn.onclick = () => {
-      if (currentSlides.length > 0) {
-        modalIndex = (modalIndex - 1 + currentSlides.length) % currentSlides.length;
-        modalImg.src = currentSlides[modalIndex];
-      }
+      showSlide((modalIndex - 1 + currentSlides.length) % currentSlides.length);
     }
 
-    // Swipe support para mobile
     let touchStartX = 0;
     let touchEndX = 0;
 
